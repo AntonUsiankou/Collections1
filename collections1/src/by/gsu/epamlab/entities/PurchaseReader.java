@@ -15,14 +15,14 @@ public class PurchaseReader {
         Purchase purchase = new Purchase();
         String[] elements = csvLine.split(DELEMITER);
         String name = elements[Fields.NAME.ordinal()];
-        int price = Integer.parseInt(elements[Fields.PRICE.ordinal()]);
+        Byn price = new Byn(Integer.parseInt(elements[Fields.PRICE.ordinal()]));
         int number = Integer.parseInt(elements[Fields.NUMBER.ordinal()]);
 
         if (elements.length == PURCHASE_FIELDS_NUMBER) {
             purchase = new Purchase(name, price, number);
         } else {
-            if (elements.length == DISCOUNT_PURCHASE_FIELDS_NUMBER {
-                int discount = Integer.parseInt(elements[Fields.DISCOUNT.ordinal()]);
+            if (elements.length == DISCOUNT_PURCHASE_FIELDS_NUMBER) {
+                Byn discount = new Byn(Integer.parseInt(elements[Fields.DISCOUNT.ordinal()]));
                 purchase = new PricePurchase(name, price, number, discount);
             }
         }

@@ -1,6 +1,6 @@
 package by.gsu.epamlab.entities;
 
-public class Purchase implements Comparable<Purchase> {
+public class Purchase {
 
     private String productName;
     private Byn price;
@@ -9,12 +9,11 @@ public class Purchase implements Comparable<Purchase> {
     public Purchase() {
     }
 
-    public Purchase(String productName, int price, int numberUnits) {
+    public Purchase(String productName, Byn price, int numberUnits) {
         this.productName = productName;
         this.price = new Byn(price);
         this.numberUnits = numberUnits;
     }
-
 
     public String getProductName() {
         return productName;
@@ -53,7 +52,6 @@ public class Purchase implements Comparable<Purchase> {
         return fieldsToString() + ";" + getCost();
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,7 +63,11 @@ public class Purchase implements Comparable<Purchase> {
     }
 
     @Override
-    public int compareTo(Purchase o) {
-        return 0;
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((productName == null) ? 0 : productName.hashCode());
+        result = prime * result + ((price == null) ? 0 : price.hashCode());
+        return result;
     }
 }

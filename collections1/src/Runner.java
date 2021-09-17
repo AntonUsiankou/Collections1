@@ -14,77 +14,100 @@ import static by.gsu.epamlab.Constants.*;
 public class Runner {
     public static void main(String[] args) {
         try (Scanner sc = new Scanner(new FileReader(FILE_PATH))) {
-            HashMap<Purchase, Week> purchaseWeekdaysFirstMap = new HashMap<>();
-            HashMap<Purchase, Week> purchaseWeekdaysLastMap = new HashMap<>();
+            Map<Purchase, Week> firstMapPurchaseWeekdays = new HashMap<>();
+            Map<Purchase, Week> lastMapPurchaseWeekdays = new HashMap<>();
             Map<Week, List<Purchase>> weekdaysPurchasesMap = new EnumMap<>(Week.class);
             List<PricePurchase> pricePurchasesList = new ArrayList<>();
 
             while (sc.hasNext()) {
                 Purchase purchase = PurchaseReader.getPurchaseFromFactory(sc.nextLine());
                 Week week = Week.valueOf(sc.nextLine());
-
-                purchaseWeekdaysLastMap.put(purchase, week);
-
-                if (!purchaseWeekdaysFirstMap.containsKey(purchase)) {
-                    purchaseWeekdaysFirstMap.put(purchase, week);
+                //1)
+                if (!lastMapPurchaseWeekdays.containsKey(purchase)) {
+                    firstMapPurchaseWeekdays.put(purchase, week);
                 }
-
-                List<Purchase> l = weekdaysPurchasesMap.get(week);
-                if (l == null) {
-                    weekdaysPurchasesMap.put(week, l = new ArrayList<>());
-                }
-                l.add(purchase);
-
+                //3)
+                lastMapPurchaseWeekdays.put(purchase, week);
+                //10)
                 if (purchase.getClass() == PricePurchase.class) {
                     pricePurchasesList.add((PricePurchase) purchase);
                 }
+                //12)
+                List<Purchase> purchaseList = weekdaysPurchasesMap.get(week);
+                if (purchaseList == null) {
+                    weekdaysPurchasesMap.put(week, purchaseList = new ArrayList<>());
+                }
+                purchaseList.add(purchase);
+
             }
-
-            print(PURCHASE_FIRST_MAP_MESSAGE, purchaseWeekdaysFirstMap);
-            print(PURCHASE_LAST_MAP_MESSAGE, purchaseWeekdaysLastMap);
-
-            Purchase searchPurchaseBread = new Purchase("bread", 155, 1);
-            search(purchaseWeekdaysFirstMap, searchPurchaseBread);
-            search(purchaseWeekdaysLastMap, searchPurchaseBread);
-            Purchase searchPurchaseBreadNewPrice = new Purchase("bread", 170,1);
-            search(purchaseWeekdaysFirstMap, searchPurchaseBreadNewPrice);
-
-            print(PURCHASE_FIRST_MAP_MESSAGE, purchaseWeekdaysFirstMap);
-            print(PURCHASE_LAST_MAP_MESSAGE, purchaseWeekdaysLastMap);
-
+            //2)
+            print(PURCHASE_FIRST_MAP_MESSAGE, firstMapPurchaseWeekdays);
+            //4)
+            print(PURCHASE_LAST_MAP_MESSAGE, lastMapPurchaseWeekdays);
+            //5)
+            Purchase searchPurchaseBread = new Purchase("bread", new Byn(155), 0);
+            search(firstMapPurchaseWeekdays, searchPurchaseBread);
+            search(lastMapPurchaseWeekdays, searchPurchaseBread);
+            //6)
+            Purchase searchPurchaseBreadNewPrice = new Purchase("bread", new Byn(170), 0);
+            search(firstMapPurchaseWeekdays, searchPurchaseBreadNewPrice);
+            //7)
+            removeEntries(firstMapPurchaseWeekdays, MEAT, Week.MONDAY);
+            //8)
+            removeEntries(lastMapPurchaseWeekdays, EMPTY, Week.FRIDAY);
+            //9)
+            print(PURCHASE_FIRST_MAP_MESSAGE, firstMapPurchaseWeekdays);
+            print(PURCHASE_LAST_MAP_MESSAGE, firstMapPurchaseWeekdays);
+            //11)
             System.out.println(TOTAL_COST + PRICE_PURCHASE_IS + calculateTotalCost(pricePurchasesList));
+            //13)
+            print(WEEKDAY_PURCHASES_ENUM_MAP, weekdaysPurchasesMap);
+            for (Map.Entry<Week, List<Purchase>> entry : weekdaysPurchasesMap.entrySet()) {
+                System.out.println(TOTAL_COST + entry.getKey() + " is " + calculateTotalCost(entry.getValue()));
+            }
+            //14)
+            System.out.println(TOTAL_COST + PRICE_PURCHASE_IS + calculateTotalCost(pricePurchasesList));
+            //15)
+            search(weekdaysPurchasesMap, Week.MONDAY);
 
-            
         } catch (FileNotFoundException e) {
             System.out.println(FILE_NOT_FOUND_MESSAGE);
         }
     }
 
-    public static <K, V> void print(String header, Map<K, V> map) {
-        System.out.println();
+    private static <K, V> void print(String header, Map<K, V> map) {
         System.out.println(PRINT_THE_MAP + header);
         for (Map.Entry<K, V> entry : map.entrySet()) {
             System.out.println(entry.getKey() + Constants.DASH + entry.getValue());
         }
-        System.out.println();
+        System.out.println("--------------------------------------------");
     }
 
-    private static Byn calculateTotalCost(List<? extends Purchase> list) {
-        Byn totalCost = new Byn(NUMBER_NULL);
-
-        for (Purchase purchase : list) {
-            totalCost.addition(purchase.getCost());
+    private static Byn calculateTotalCost(List<? extends Purchase> purchases) {
+        Byn totalCost = new Byn();
+        for (Purchase purchase : purchases) {
+            totalCost = totalCost.addition(purchase.getCost());
         }
+        System.out.println("--------------------------------------------");
         return totalCost;
     }
 
-    private static void remove() {
-
+    private static <K extends Purchase, V> void removeEntries(Map<K, V> map, String productName, Week week) {
+        for (Iterator<Map.Entry<K, V>> it = map.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<K, V> pair = it.next();
+            K key = pair.getKey();
+            V value = pair.getValue();
+            if (key.getProductName().equals(productName) || value.equals(week)) {
+                it.remove();
+            }
+        }
     }
 
-    public static <V, K> void search(Map<K, V> map, K key) {
+    private static <V, K> void search(Map<K, V> map, K key) {
         V value = map.get(key);
         System.out.println("Value " + key + " is " + (value != null ? value : "not found"));
+        System.out.println("--------------------------------------------");
     }
-}
 
+
+}

@@ -3,7 +3,11 @@ package by.gsu.epamlab.entities;
 
 public class Byn implements Comparable<Byn> {
 
-    private int value;
+    private final int value;
+
+    public Byn() {
+        this(0);
+    }
 
     public Byn(int value) {
         this.value = value;
@@ -26,19 +30,19 @@ public class Byn implements Comparable<Byn> {
     }
 
     public Byn addition(Byn byn) {
-        return new Byn(this.value += byn.value);
+        return new Byn(value + byn.value);
     }
 
     public Byn subtraction(Byn byn) {
-        return new Byn(this.value -= byn.value);
+        return new Byn(value - byn.value);
     }
 
     public Byn multiply(int k) {
-        return new Byn(this.value *= k);
+        return new Byn(value * k);
     }
 
     public Byn multiply(double k, RoundMethod roundMethod, int digits) {
-        return new Byn(this.value = roundMethod.rounding(this.value * k, digits));
+        return new Byn(roundMethod.rounding(value * k, digits));
     }
 
     public Byn round(int digits) {
@@ -46,7 +50,7 @@ public class Byn implements Comparable<Byn> {
     }
 
     public Byn round(RoundMethod roundMethod, int roundDigits) {
-        return new Byn(this.value = roundMethod.rounding(this.value, roundDigits));
+        return new Byn(roundMethod.rounding(value, roundDigits));
     }
 
     @Override
@@ -66,6 +70,5 @@ public class Byn implements Comparable<Byn> {
     public int compareTo(Byn byn) {
         return this.value - byn.value;
     }
-
 
 }

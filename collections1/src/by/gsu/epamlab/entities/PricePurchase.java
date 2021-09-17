@@ -9,7 +9,7 @@ public class PricePurchase extends Purchase {
     private Byn discount;
 
 
-    public PricePurchase(String productName, int price, int numberUnits, int discount) {
+    public PricePurchase(String productName, Byn price, int numberUnits, Byn discount) {
         super(productName, price, numberUnits);
         this.discount = new Byn(discount);
     }
